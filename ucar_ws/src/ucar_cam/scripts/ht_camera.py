@@ -8,16 +8,25 @@ weight=320
 height=240
 value=1
 cap.set(3, weight)  
-#print('宽度:{}'.format(cap.get(3)))
-#print(':{}'.format(cap.get(4)))
-#print(':{}'.format(cap.get()))
+print('--------------------------------属性值---------------------------------')
+print('宽度:{}'.format(cap.get(3)))
+print('高度:{}'.format(cap.get(4)))
+print('帧速:{}'.format(cap.get(5)))
+print('视频编码格式:{}'.format(cap.get(6)))
+print('高度:{}'.format(cap.get(10)))
+print('对比度:{}'.format(cap.get(11)))
+print('饱和度:{}'.format(cap.get(12)))
+print('色相:{}'.format(cap.get(13)))
+print('增益:{}'.format(cap.get(14)))
+print('曝光:{}'.format(cap.get(15)))
+
 # 设置分辨率 3和4 分别代表摄像头的属性值。你可以使用函数 cap.get(propId) 来获得视频的一些参数信息。
 #这里propId 可以是 0 到 18 之间的任何整数。每一个数代表视频的一个属性,见表其中的一些值可以使用cap.set(propId,value) 
 # 来修改,value 就是你想要设置成的新值。例如,我可以使用 cap.get(3) 和 cap.get(4) 来查看每一帧的宽和高。默认情况下得到的值是 640X480。
 # 但是我可以使用 ret=cap.set(3,320)和 ret=cap.set(4,240) 来把宽和高改成 320X240。
 cap.set(4, height)
-cap.set(10,1)
-cap.set(15,0.1)
+# cap.set(10,1)
+# cap.set(15,0.1)
 codec = cv2.VideoWriter.fourcc('M', 'J', 'P', 'G')
 print(codec)
 
@@ -34,11 +43,40 @@ while(True):
     ret, frame = cap.read()
     frame = cv2.flip(frame,1)   ##图像左右颠倒
     cv2.putText(frame,'FPS:'+' '+fps_now,(10, 30), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1 ,(0,0,255),2,cv2.LINE_AA)
-    h,w=frame.shape[:2]
+    # h,w=frame.shape[:2]
     #print(h,w)
     #print("获得的帧率:",fps)
     cv2.imshow('Camera_USB', frame)
+    i=10
+    count=float(input())
+    cap.set(i,count)
     if cv2.waitKey(1) & 0xFF == 27:
         break
+    
+print('--------------------------------属性值---------------------------------')
+print('宽度:{}'.format(cap.get(3)))
+print('高度:{}'.format(cap.get(4)))
+print('帧速:{}'.format(cap.get(5)))
+print('视频编码格式:{}'.format(cap.get(6)))
+print('高度:{}'.format(cap.get(10)))
+print('对比度:{}'.format(cap.get(11)))
+print('饱和度:{}'.format(cap.get(12)))
+print('色相:{}'.format(cap.get(13)))
+print('增益:{}'.format(cap.get(14)))
+print('曝光:{}'.format(cap.get(15)))
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 cap.release()
 cv2.destroyAllWindows()
