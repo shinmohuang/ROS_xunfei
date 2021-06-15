@@ -6,6 +6,10 @@ from utils import google_utils
 from utils.datasets import *
 from utils.utils import *
 
+#ROS
+import rospy
+from sensor_msgs.msg import Image
+from std_msgs.msg import Header
 
 def detect(save_img=False):
     out, source, weights, view_img, save_txt, imgsz = \
@@ -27,6 +31,24 @@ def detect(save_img=False):
     model.to(device).eval()
     if half:
         model.half()  # to FP16
+
+        # ROS
+        rospy.init_node('ros_yolo')
+        # image_topic_1 = "/usb_cam/image_raw"
+        image_topic_1 = "/kinect/rgb/image_raw"
+        rospy.Subscriber(image_topic_1, Image, image_callback_1, queue_size=1, buff_size=52428800)
+        image_pub = rospy.Publisher('/yolo_result_out', Image, queue_size=1)
+        # rospy.init_node("yolo_result_out_node", anonymous=True)
+
+        rospy.spin()
+
+
+
+
+
+
+
+
 
     # Second-stage classifier
     classify = False
@@ -136,6 +158,7 @@ def detect(save_img=False):
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str, default='weights/yolov5s.pt', help='model.pt path')
     parser.add_argument('--source', type=str, default='inference/images', help='source')  # file/folder, 0 for webcam
