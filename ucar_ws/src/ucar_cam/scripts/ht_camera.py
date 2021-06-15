@@ -47,33 +47,30 @@ while(True):
     #print(h,w)
     #print("获得的帧率:",fps)
     cv2.imshow('Camera_USB', frame)
+    #$cv2.waitKey(3000)
+    #cv2.destroyAllWindows()
+    i=10
+    if cv2.waitKey(300000) & 0xFF == 27:
+       break
+    else:
+       count=float(input())
+       cap.set(i,count)
+       continue
     i=10
     count=float(input())
     cap.set(i,count)
-    if cv2.waitKey(1) & 0xFF == 27:
-        break
-    
-print('--------------------------------属性值---------------------------------')
-print('宽度:{}'.format(cap.get(3)))
-print('高度:{}'.format(cap.get(4)))
-print('帧速:{}'.format(cap.get(5)))
-print('视频编码格式:{}'.format(cap.get(6)))
-print('高度:{}'.format(cap.get(10)))
-print('对比度:{}'.format(cap.get(11)))
-print('饱和度:{}'.format(cap.get(12)))
-print('色相:{}'.format(cap.get(13)))
-print('增益:{}'.format(cap.get(14)))
-print('曝光:{}'.format(cap.get(15)))
 
-
-
-
-
-
-
-
-
-
+    print('--------------------------------属性值---------------------------------')
+    print('3宽度:{}'.format(cap.get(3)))
+    print('4高度:{}'.format(cap.get(4)))
+    print('5帧速:{}'.format(cap.get(5)))
+    #print('视频编码格式:{}'.format(cap.get(6)))
+    print('10亮度:{}'.format(cap.get(10)))
+    print('11对比度:{}'.format(cap.get(11)))
+    print('12饱和度:{}'.format(cap.get(12)))
+    print('13色相:{}'.format(cap.get(13)))
+    print('14增益:{}'.format(cap.get(14)))
+    print('15曝光:{}'.format(cap.get(15)))
 
 
 

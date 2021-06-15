@@ -16,8 +16,8 @@ cap.set(3, weight)
 # 来修改,value 就是你想要设置成的新值。例如,我可以使用 cap.get(3) 和 cap.get(4) 来查看每一帧的宽和高。默认情况下得到的值是 640X480。
 # 但是我可以使用 ret=cap.set(3,320)和 ret=cap.set(4,240) 来把宽和高改成 320X240。
 cap.set(4, height)
-cap.set(10,1)
-cap.set(15,0.1)
+#cap.set(10,1)
+#cap.set(15,0.1)
 codec = cv2.VideoWriter.fourcc('M', 'J', 'P', 'G')
 print(codec)
 
