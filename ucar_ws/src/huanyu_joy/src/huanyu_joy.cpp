@@ -58,6 +58,7 @@ void huanyu_joy::publish_joystick_event()
             switch(jse.number)
             {
                 case 4:maxLinear_x += 0.1;
+                    maxLinear_y = maxLinear_x;
                     ROS_INFO("copy4");
                     break;
                 case 6:(maxLinear_x > 0.1)?(maxLinear_x -= 0.1):(maxLinear_x = maxLinear_x);
