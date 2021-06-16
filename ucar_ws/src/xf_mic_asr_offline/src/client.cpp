@@ -22,6 +22,8 @@
 #include <sys/stat.h>
 #include <iostream>
 
+
+
 using namespace std;
 
 int awake_angle = -1;
@@ -36,7 +38,8 @@ int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "client_node");
     ros::NodeHandle nh;
-
+    
+  
     /*离线命令词识别*/
     ros::ServiceClient get_offline_recognise_result_client = 
     nh.serviceClient<xf_mic_asr_offline::Get_Offline_Result_srv>("xf_asr_offline_node/get_offline_recognise_result_srv");
@@ -83,12 +86,13 @@ int main(int argc, char *argv[])
     GetOfflineResult_srv.request.time_per_order = 3;
     //call get_offline_recognise_result_srv
     if(get_offline_recognise_result_client.call(GetOfflineResult_srv))
-    {
-        ROS_INFO("succeed to call service \"get_offline_recognise_result_srv\"!");
+    {ROS_INFO("succeed to call service \"get_offline_recognise_result_srv\"!");
         std::cout << "result: " << GetOfflineResult_srv.response.result << endl;
         std::cout << "fail reason: " << GetOfflineResult_srv.response.fail_reason << endl;
         std::cout << "text: " << GetOfflineResult_srv.response.text << endl;
         system("play -t raw -r 16k -e signed -b 16 -c 1 '/home/nie/mmic_ws/src/SR2.1.2-HR1.1.3/vvui_ros-master/xf_mic_asr_offline/audio/vvui_deno.pcm' -q --no-show-progress");
+       
+        
     }
     else
     {

@@ -186,6 +186,15 @@ add_dependencies(
   xf_mic_asr_offline_gencpp
 )
 target_link_libraries(client_node ${catkin_LIBRARIES} offline_record_lib hid_lib rt dl  pthread stdc++ )
+
+add_executable(huati src/huati.cpp)
+
+add_dependencies(
+  huati
+  ${xf_mic_package_EXPORTED_TARGETS}
+  xf_mic_asr_offline_gencpp
+)
+target_link_libraries(huati ${catkin_LIBRARIES})
 #############
 ## Install ##
 #############

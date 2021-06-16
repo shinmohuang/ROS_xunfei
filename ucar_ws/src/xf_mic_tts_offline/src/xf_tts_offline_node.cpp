@@ -201,7 +201,7 @@ exit:
  */
 void playVoice()
 {
-    string play_audio_path = "play " + pkg_path + "/audio/shanben.wav";
+    string play_audio_path = "play " + pkg_path + "/audio/say.wav";
     system(play_audio_path.c_str());
 }
 
