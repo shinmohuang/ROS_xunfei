@@ -71,6 +71,10 @@ add_message_files(
   FILES
   Pcm_Msg.msg
 )
+add_message_files(
+  FILES
+  qidong.msg
+)
 
 ## Generate services in the 'srv' folder
 add_service_files(

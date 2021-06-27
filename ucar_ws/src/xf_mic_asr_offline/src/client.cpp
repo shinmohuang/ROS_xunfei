@@ -22,7 +22,8 @@
 #include <sys/stat.h>
 #include <iostream>
 
-
+//#include <xf_mic_asr_offline/qidong.h>
+//#include <std_srvs/Trigger.h>
 
 using namespace std;
 
@@ -39,7 +40,15 @@ int main(int argc, char *argv[])
     ros::init(argc, argv, "client_node");
     ros::NodeHandle nh;
     
-  
+ros::Publisher pub = nh.advertise<std_msgs::String>("/voiceAwake",10);
+ ros::Rate loop_rate(10);
+ int count=0;  
+std_msgs::String bool1;
+
+/*ros::ServiceClient voice_client = 
+    nh.serviceClient<std_srvs::Trigger>("voiceAwake");
+std_srvs::Trigger voic;
+voic.request = "start";*/
     /*离线命令词识别*/
     ros::ServiceClient get_offline_recognise_result_client = 
     nh.serviceClient<xf_mic_asr_offline::Get_Offline_Result_srv>("xf_asr_offline_node/get_offline_recognise_result_srv");
@@ -80,7 +89,7 @@ int main(int argc, char *argv[])
     //}
 
     sleep(2);
-
+part2:
     GetOfflineResult_srv.request.offline_recognise_start = 1;
     GetOfflineResult_srv.request.confidence_threshold = 20;
     GetOfflineResult_srv.request.time_per_order = 3;
@@ -91,7 +100,27 @@ int main(int argc, char *argv[])
         std::cout << "fail reason: " << GetOfflineResult_srv.response.fail_reason << endl;
         std::cout << "text: " << GetOfflineResult_srv.response.text << endl;
         system("play -t raw -r 16k -e signed -b 16 -c 1 '/home/nie/mmic_ws/src/SR2.1.2-HR1.1.3/vvui_ros-master/xf_mic_asr_offline/audio/vvui_deno.pcm' -q --no-show-progress");
-       
+       if(GetOfflineResult_srv.response.text=="向前走")
+       { while(ros::ok())
+ {
+  
+bool1.data="start";
+  /*twist.linear.x = 0.0;   
+  twist.linear.y = 0.0;
+  twist.linear.z = 0.0;
+ 
+  twist.angular.x = 0.0;
+  twist.angular.y = 0.0;
+  twist.angular.z = 0.1;*/
+  
+  //ROS_INFO("shuchu11");
+  pub.publish(bool1);
+
+  ros::spinOnce();
+  loop_rate.sleep();
+  ++count;
+ }
+}else {bool1.data=2;pub.publish(bool1);goto part2;}
         
     }
     else
