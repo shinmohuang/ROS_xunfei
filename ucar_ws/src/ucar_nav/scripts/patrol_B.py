@@ -9,9 +9,9 @@ from rospy import client
 from rospy.topics import Poller
 
 waypoints = [
-    [(2.263, -2.945, 0.000),(0.000, 0.000, 0.705, 0.709)]
-
-]
+    ((2.263, -2.945, 0.000),[0.000, 0.000, 0.705, 0.709]),
+    ((0.005, -1.116, 0.000),[0.000, 0.000, 0.735, 0.678])
+    ]
 
 def goal_pose(pose):
     goal_pose = MoveBaseGoal()

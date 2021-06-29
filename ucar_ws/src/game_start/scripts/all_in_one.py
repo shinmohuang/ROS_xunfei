@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+#encoding=UTF-8
+import cv2
+import numpy as np
+import cv2.aruco as aruco
 
 from std_msgs.msg import String
 import rospy
@@ -6,27 +10,44 @@ import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import smach
 import smach_ros
+import threading
 
+import ht_aruco as ht
+
+voiceflag = False
+
+def thread_job():
+    rospy.spin()
 
 def voicecallback(data):
+    global voiceflag
     if data.data == "start":
         print('Start navigating!')
+        rospy.sleep(1)
         voiceflag = True
         return voiceflag
 
     else:
         print('Waiting for voiceAwake......')
-        rospy.sleep(3)
+        rospy.sleep(1)
         voiceflag = False
         return voiceflag
+
+
+    
 class Wait4Awake(smach.State):
+    #global voiceflag
     def __init__(self):
-        smach.State.__init__(self, outcomes=['navigating', 'wait'])
+        smach.State.__init__(self, outcomes=['navigating', 'wait'],output_keys=['navpoints'])
     
     def execute(self, userdata):
+        add_thread = threading.Thread(target = thread_job)
+        add_thread.start()
         rospy.Subscriber("voiceAwake",String, voicecallback)
-        rospy.spin()
-        if voicecallback:
+        userdata.navpoints = -1
+        rospy.sleep(2)
+
+        if voiceflag:
             return 'navigating'
         else:
             return 'wait'
@@ -36,7 +57,7 @@ class Wait4Awake(smach.State):
 
 class Navigate(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['navigating', 'arrived', 'end'])
+        smach.State.__init__(self, outcomes=['navigating', 'arrived', 'end'],input_keys=['navpoints'])
 
         self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction) 
         self.client.wait_for_server()
@@ -46,12 +67,19 @@ class Navigate(smach.State):
         if rospy.is_shutdown():
             return 'end'
         else:
-            waypoints = self.get_waypoints()
-            for pose in waypoints:   
-                goal = self.goal_pose(pose)
-                self.client.send_goal(goal)
-                self.client.wait_for_result()
-                rospy.sleep(1.5)
+            # if userdata.navpoints == 0:
+            #    #aim = 0
+            # elif userdata.navpoints == 1:
+            #     #aim = 1
+            # elif userdata.navpoints ==2:
+            #     #aim = 2
+            # elif userdata.navpoints ==3:
+            #     #aim = 3
+            waypoints = self.get_waypoints(userdata.navpoints+1) 
+            goal = self.goal_pose(waypoints)
+            self.client.send_goal(goal)
+            self.client.wait_for_result()
+            rospy.sleep(1.5)
             # g_start = False
             return 'arrived'
     
@@ -71,11 +99,35 @@ class Navigate(smach.State):
 
         return goal_pose
     
-    def get_waypoints(self):
+    def get_waypoints(self,num):
         waypoints = [
-            [(2.263, -2.945, 0.000),(0.000, 0.000, 0.705, 0.709)]
+            [[2.263, -2.945, 0.000],[0.000, 0.000, 0.705, 0.709]],
+            [[1.014, -1.108, 0.000],[0.000, 0.000, 0.732, 0.681]],
+            [[0.529, -1.109, 0.000],[0.000, 0.000, 0.749, 0.663]],            
+            [[0.005, -1.116, 0.000],[0.000, 0.000, 0.735, 0.678]]
             ]
-        return waypoints
+        return waypoints[num]
+
+
+class Aruco(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,outcomes=['nav2D1','nav2D2','nav2D3','Aruco'],output_keys=['navpoints'])
+
+    def execute(self, userdata):
+        code = ht.ht_aruco()
+        if code == 0:
+            userdata.navpoints = 0
+            return 'nav2D1'
+        elif code == 1:
+            userdata.navpoints = 1
+            return 'nav2D2'
+        elif code == 2:
+            userdata.navpoints = 2
+            return'nav2D3'
+        elif code == -1:
+            return 'Aruco'
+        
+
 
 
 def main():
@@ -87,7 +139,9 @@ def main():
 
     with sm:        
         smach.StateMachine.add('WAIT', Wait4Awake(),transitions={'navigating':'NAV', 'wait':'WAIT' })
-        smach.StateMachine.add('NAV', Navigate(), transitions={'arrived':'end', 'navigating':'NAV'})
+        smach.StateMachine.add('NAV', Navigate(), transitions={'arrived':'ARUCO', 'navigating':'NAV'})
+        smach.StateMachine.add('ARUCO', Aruco(), transitions={'nav2D1':'NAV', 'nav2D2':'NAV','nav2D3':'NAV','Aruco':'ARUCO'})
+
 
         sis = smach_ros.IntrospectionServer('FIRST_TRY', sm, '/SM_ROOT')
         sis.start()

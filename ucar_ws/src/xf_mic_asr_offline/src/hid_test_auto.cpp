@@ -789,7 +789,7 @@ int main(int argc, char *argv[])
 	ndHandle.param("confidence", confidence, 0);//离线命令词识别置信度阈值
 	ndHandle.param("seconds_per_order", time_per_order, 3); //单次录制音频的时长
 	ndHandle.param("source_path", source_path, std::string("./"));
-	ndHandle.param("appid", appid, std::string("5e1593ee"));//appid，需要更换为自己的
+	ndHandle.param("appid", appid, std::string("e7a321a6"));//appid，需要更换为自己的
 
 	/*　topic 发布实时音频文件*/
 	pub_pcm = ndHandle.advertise<xf_mic_asr_offline::Pcm_Msg>(pcm_topic, 1);

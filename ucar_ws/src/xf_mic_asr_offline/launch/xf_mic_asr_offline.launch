@@ -7,4 +7,8 @@
     <param name="source_path" type="string" value="$(arg package_path)"/>
     <rosparam command="load" file="$(find xf_mic_asr_offline)/config/mic_offline_params.yaml" />
   </node>
+
 </launch>
+
+
+
