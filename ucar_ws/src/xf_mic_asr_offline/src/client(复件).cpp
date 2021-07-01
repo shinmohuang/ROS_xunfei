@@ -30,10 +30,10 @@ using namespace std;
 
 int awake_angle = -1;
 
-void quanju(const std_msgs::String::ConstPtr& msg)
+void quanju(std_msgs::String msg)
 {
    
-    /*startflag=true;*/
+    startflag=true;
     printf("话题接受成功，startflag为true");
 }
 void awake_angle_Callback(std_msgs::Int32 msg)
@@ -51,8 +51,6 @@ ros::Rate loop_rate(10);
  int count=0;  
 std_msgs::String bool1;
 ros::Subscriber subs=nh.subscribe("/startfl",10,quanju);
-ros::spin();
-return 0;
 /*ros::ServiceClient voice_client = 
     nh.serviceClient<std_srvs::Trigger>("voiceAwake");
 std_srvs::Trigger voic;

@@ -1,8 +1,13 @@
-waypoints = [
-            [[2.263, -2.945, 0.000],[0.000, 0.000, 0.705, 0.709]],
-            [[0.005, -1.116, 0.000],[0.000, 0.000, 0.735, 0.678]],
-            [[0.529, -1.209, 0.000],[0.000, 0.000, 0.749, 0.663]],
-            [[1.014, -1.108, 0.000],[0.000, 0.000, 0.732, 0.681]],
-            ]
+import os
+import threading
+def main():
+    add_thread = threading.Thread(target = thread_detect)
+    add_thread.start()
+    print('666')
 
-print(waypoints[0])
+def thread_detect():
+    os.system('python3 /home/ucar/ROS_xunfei/ucar_ws/src/ht_image/scripts/xunfei2.0.py')
+
+
+if __name__ == "__main__":
+    main()

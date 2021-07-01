@@ -203,6 +203,10 @@ class LoadStreams:  # multiple IP or RTSP cameras
             cap = cv2.VideoCapture(0 if s == '0' else s)
             cap.set(3, 1920)
             cap.set(4, 1080)
+            # cap.set(3, 640)
+            # cap.set(4, 480)
+            # cap.set(3, 1280)
+            # cap.set(4, 720)
             cap.set(cv2.CAP_PROP_AUTOFOCUS, True)
             assert cap.isOpened(), 'Failed to open %s' % s
             w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))

@@ -1,2 +1,2 @@
-uint8 longhair_people
 uint8 glasses_people
+uint8 longhair_people

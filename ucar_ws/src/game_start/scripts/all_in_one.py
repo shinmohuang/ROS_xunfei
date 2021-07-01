@@ -3,6 +3,8 @@
 import cv2
 import numpy as np
 import cv2.aruco as aruco
+import os
+
 
 from std_msgs.msg import String
 import rospy
@@ -67,21 +69,21 @@ class Navigate(smach.State):
         if rospy.is_shutdown():
             return 'end'
         else:
-            # if userdata.navpoints == 0:
-            #    #aim = 0
-            # elif userdata.navpoints == 1:
-            #     #aim = 1
-            # elif userdata.navpoints ==2:
-            #     #aim = 2
-            # elif userdata.navpoints ==3:
-            #     #aim = 3
+        
             waypoints = self.get_waypoints(userdata.navpoints+1) 
             goal = self.goal_pose(waypoints)
             self.client.send_goal(goal)
             self.client.wait_for_result()
             rospy.sleep(1.5)
-            # g_start = False
-            return 'arrived'
+            if (userdata.navpoints+1) == 0:
+               return 'arrived'
+            elif (userdata.navpoints+1) == 1:
+                return 'end'
+            elif (userdata.navpoints+1) ==2:
+                return 'end'
+            elif (userdata.navpoints+1) ==3:
+                return 'end'
+            
     
     def goal_pose(self, pose): 
         goal_pose = MoveBaseGoal()
@@ -111,9 +113,11 @@ class Navigate(smach.State):
 
 class Aruco(smach.State):
     def __init__(self):
-        smach.State.__init__(self,outcomes=['nav2D1','nav2D2','nav2D3','Aruco'],output_keys=['navpoints'])
+        smach.State.__init__(self,outcomes=['nav2D1','nav2D2','nav2D3','Aruco','end'],output_keys=['navpoints'])
 
     def execute(self, userdata):
+        count = 0
+        count = count+1
         code = ht.ht_aruco()
         if code == 0:
             userdata.navpoints = 0
@@ -125,9 +129,23 @@ class Aruco(smach.State):
             userdata.navpoints = 2
             return'nav2D3'
         elif code == -1:
-            return 'Aruco'
-        
+            if count <10:
+                return 'Aruco'
+            else:
+                return 'end'
 
+
+
+def thread_detect():
+    os.system('python3 /mnt/ROS_xunfei/ucar_ws/src/ht_image/scripts/xunfei2.0.py')
+class detect(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,outcomes=['success'])
+
+    def execute(self, userdata):
+        add_thread = threading.Thread(target = thread_detect)
+        add_thread.start()
+        return 'success'
 
 
 def main():
@@ -139,8 +157,8 @@ def main():
 
     with sm:        
         smach.StateMachine.add('WAIT', Wait4Awake(),transitions={'navigating':'NAV', 'wait':'WAIT' })
-        smach.StateMachine.add('NAV', Navigate(), transitions={'arrived':'ARUCO', 'navigating':'NAV'})
-        smach.StateMachine.add('ARUCO', Aruco(), transitions={'nav2D1':'NAV', 'nav2D2':'NAV','nav2D3':'NAV','Aruco':'ARUCO'})
+        smach.StateMachine.add('NAV', Navigate(), transitions={'arrived':'ARUCO', 'navigating':'NAV','end':'end'})
+        smach.StateMachine.add('ARUCO', Aruco(), transitions={'nav2D1':'NAV', 'nav2D2':'NAV','nav2D3':'NAV','Aruco':'ARUCO','end':'end'})
 
 
         sis = smach_ros.IntrospectionServer('FIRST_TRY', sm, '/SM_ROOT')

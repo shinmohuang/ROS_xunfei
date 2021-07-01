@@ -11,6 +11,7 @@ import numpy as np
 import rospy
 from std_msgs.msg import Header
 from sensor_msgs.msg import Image
+from ht_msg.msg import Ht
 from cv_bridge import CvBridge, CvBridgeError
 import time
 
@@ -138,6 +139,15 @@ def detect(save_img=False):
                 ros_frame.step = 1920
                 ros_frame.data = np.array(im0).tostring()  # 图片格式转换
                 image_pub.publish(ros_frame)  # 发布消息
+
+                # 初始化learning_topic::Person类型的消息
+                ht_msg = Ht()
+                ht_msg.glasses_people = 3;
+                ht_msg.longhair_people = 3;
+                # 发布消息
+                info_pub.publish(ht_msg)
+                rospy.loginfo("Publsh person message[%s, %d]",
+                              ht_msg.glasses_people, ht_msg.longhair_people)
                 end = time.time()
                 print("cost time:", end - start)  # 看一下每一帧的执行时间，从而确定合适的rate
                 rate = rospy.Rate(25)  # 10hz
@@ -192,6 +202,7 @@ if __name__ == '__main__':
 
     rospy.init_node('ht_publish_node', anonymous=True)  # 定义节点
     image_pub = rospy.Publisher('/ht_image_view/ht_image_raw', Image, queue_size=1)  # 定义话题
+    info_pub = rospy.Publisher('/ht_num_info', Ht, queue_size=10)
 
     with torch.no_grad():
         detect()
