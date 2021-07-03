@@ -2,7 +2,7 @@
 <node pkg="amcl" type="amcl" name="amcl">
   <!-- Publish scans from best pose at a max of 10 Hz -->
   <param name="odom_model_type" value="omni"/>
-  <param name="odom_alpha5" value="0.2"/>
+  <param name="odom_alpha5" value="0.3"/>
   <param name="transform_tolerance" value="0.2" />
   <param name="gui_publish_rate" value="10.0"/>
   <param name="laser_max_beams" value="50"/>
@@ -31,7 +31,7 @@
   <!-- <param name="laser_model_type" value="likelihood_field"/> -->
   <param name="laser_model_type" value="beam"/>
   <param name="laser_likelihood_max_dist" value="2.0"/>
-  <param name="update_min_d" value="0.1"/>     <!-- 向前 运动0.2米 就更新粒子   阈值,  建议不大于机器人半径-->
+  <param name="update_min_d" value="0.05"/>     <!-- 向前 运动0.2米 就更新粒子   阈值,  建议不大于机器人半径-->
   <param name="update_min_a" value="0.5"/>
   <param name="odom_frame_id" value="odom"/>
   <param name="resample_interval" value="1"/>    <!--before:     1-->      <!--对粒子样本重采样间隔 2 ~ 5就好 -->

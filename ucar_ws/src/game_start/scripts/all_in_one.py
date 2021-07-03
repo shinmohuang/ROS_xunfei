@@ -4,7 +4,9 @@ import cv2
 import numpy as np
 import cv2.aruco as aruco
 import os
+from smach import user_data
 
+from xf_mic_tts_offline.srv import *
 
 from std_msgs.msg import String
 import rospy
@@ -17,6 +19,8 @@ import threading
 import ht_aruco as ht
 
 voiceflag = False
+longhair =  0
+glasses = 0
 
 def thread_job():
     rospy.spin()
@@ -65,7 +69,6 @@ class Navigate(smach.State):
         self.client.wait_for_server()
     
     def execute(self, userdata):
-        # global g_start
         if rospy.is_shutdown():
             return 'end'
         else:
@@ -103,7 +106,7 @@ class Navigate(smach.State):
     
     def get_waypoints(self,num):
         waypoints = [
-            [[2.263, -2.945, 0.000],[0.000, 0.000, 0.705, 0.709]],
+            [[2.376, -2.834, 0.000],[0.000, 0.000, 0.994, 0.106]],
             [[1.014, -1.108, 0.000],[0.000, 0.000, 0.732, 0.681]],
             [[0.529, -1.109, 0.000],[0.000, 0.000, 0.749, 0.663]],            
             [[0.005, -1.116, 0.000],[0.000, 0.000, 0.735, 0.678]]
@@ -138,6 +141,8 @@ class Aruco(smach.State):
 
 def thread_detect():
     os.system('python3 /mnt/ROS_xunfei/ucar_ws/src/ht_image/scripts/xunfei2.0.py')
+
+
 class detect(smach.State):
     def __init__(self):
         smach.State.__init__(self,outcomes=['success'])
@@ -148,18 +153,38 @@ class detect(smach.State):
         return 'success'
 
 
+class voiceSuccess(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['boardcast'])
+
+    def execute(self, userdata):
+        #   rospy.init_node("voiceSuccess")
+        global longhair
+        global glasses
+        longhair = 1
+        glasses = 2
+        client = rospy.ServiceProxy('xf_mic_tts_offline_node/play_txt_wav', Play_TTS_srv)
+        data = '长头发人数：'+str(longhair)+'眼镜个数：'+str(glasses)
+        # data = str(data) 
+        client.call('您的餐品已送达，请您取餐！','xiaoyan')
+        client.call(data,'xiaoyan')
+        #rospy.loginfo('语音已发送:', response.result)
+        
+
+        
+        return 'boardcast'
+
+
+
 def main():
-    # global g_targets, g_start
-    # g_targets = []
-    # g_start = False
     rospy.init_node('first_try')
     sm = smach.StateMachine(outcomes=['end'])
 
     with sm:        
         smach.StateMachine.add('WAIT', Wait4Awake(),transitions={'navigating':'NAV', 'wait':'WAIT' })
-        smach.StateMachine.add('NAV', Navigate(), transitions={'arrived':'ARUCO', 'navigating':'NAV','end':'end'})
+        smach.StateMachine.add('NAV', Navigate(), transitions={'arrived':'ARUCO', 'navigating':'NAV','end':'VOISUCC'})
         smach.StateMachine.add('ARUCO', Aruco(), transitions={'nav2D1':'NAV', 'nav2D2':'NAV','nav2D3':'NAV','Aruco':'ARUCO','end':'end'})
-
+        smach.StateMachine.add('VOISUCC',voiceSuccess(),transitions={'boardcast':'end'})
 
         sis = smach_ros.IntrospectionServer('FIRST_TRY', sm, '/SM_ROOT')
         sis.start()

@@ -199,6 +199,15 @@ add_dependencies(
   xf_mic_asr_offline_gencpp
 )
 target_link_libraries(huati ${catkin_LIBRARIES})
+
+add_executable(jieshou src/jieshou.cpp)
+
+add_dependencies(
+  jieshou
+  ${xf_mic_package_EXPORTED_TARGETS}
+  xf_mic_asr_offline_gencpp
+)
+target_link_libraries(jieshou ${catkin_LIBRARIES})
 #############
 ## Install ##
 #############

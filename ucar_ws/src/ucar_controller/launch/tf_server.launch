@@ -26,7 +26,7 @@
     <param name="~lidar_frame"   value="laser_frame"/>
     <param name="~imu_frame"     value="imu_frame"/>
     
-    <param name="~base_frame"    value="base_footprint"/>
+    <param name="~base_frame"    value="base_link"/>
     <!-- tf_rate 是指tf的发布频率 -->
     <param name="~tf_rate"       value="30"/>
   </node>

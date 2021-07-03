@@ -5,7 +5,7 @@ namespace ucarController
 baseBringup::baseBringup() :x_(0), y_(0), th_(0)
 {
   ros::NodeHandle pravite_nh("~");
-  pravite_nh.param("provide_odom_tf", provide_odom_tf_,true);
+  pravite_nh.param("provide_odom_tf", provide_odom_tf_,false);
   pravite_nh.param("vel_topic", vel_topic_,std::string("/cmd_vel"));///smooth_cmd_vel
   
   pravite_nh.param("joy_topic",  joy_topic_, std::string("/joy"));
@@ -795,6 +795,16 @@ void baseBringup::processIMU(uint8_t head_type)
     imu_data.linear_acceleration.x = -imu_frame_.frame.data.data_pack.accelerometer_x;
     imu_data.linear_acceleration.y = imu_frame_.frame.data.data_pack.accelerometer_y;
     imu_data.linear_acceleration.z = imu_frame_.frame.data.data_pack.accelerometer_z;
+
+    // imu_data.orientation_covariance[0] = 1e6;
+    // imu_data.orientation_covariance[4] = 1e6;
+    // imu_data.orientation_covariance[8] = 1e-6;
+    // imu_data.angular_velocity_covariance[0] = 1e6;
+    // imu_data.angular_velocity_covariance[4] = 1e6;
+    // imu_data.angular_velocity_covariance[8] = 1e-6;
+    // imu_data.linear_acceleration_covariance[0] = 1e6;
+    // imu_data.linear_acceleration_covariance[4] = 1e6;
+    // imu_data.linear_acceleration_covariance[8] = 1e-6;
 
     imu_pub_.publish(imu_data);
 
