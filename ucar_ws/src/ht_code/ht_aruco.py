@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 import cv2.aruco as aruco
+
 output='ht_aruco.mp4'
 
 
@@ -12,7 +13,7 @@ def ht_aruco():
     width, height = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))  # 宽高
     out = cv2.VideoWriter(output, fourcc, fps, (width, height))  # 写入视频
     ht_aruco_list=[]
-    for i in range(800):
+    for i in range(10):
         # get a frame
         ret, frame = cap.read()
         #frame = cv2.flip(frame,1)   ##图像左右颠倒

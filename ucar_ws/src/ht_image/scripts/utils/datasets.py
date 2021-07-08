@@ -201,13 +201,32 @@ class LoadStreams:  # multiple IP or RTSP cameras
             # Start the thread to read frames from the video stream
             print('%g/%g: %s... ' % (i + 1, n, s), end='')
             cap = cv2.VideoCapture(0 if s == '0' else s)
-            cap.set(3, 1920)
-            cap.set(4, 1080)
-            # cap.set(3, 640)
-            # cap.set(4, 480)
-            # cap.set(3, 1280)
-            # cap.set(4, 720)
-            cap.set(cv2.CAP_PROP_AUTOFOCUS, True)
+
+            #设置相机参数
+            weight = 640
+            height = 480
+            # weight = 1920
+            # height = 1080
+            cap.set(3, weight)
+            cap.set(4, height)
+            #cap.set(cv2.CAP_PROP_AUTOFOCUS, False)  # 禁止自动对焦
+            # 亮度
+            c_10 = cap.set(cv2.CAP_PROP_BRIGHTNESS, 0)
+            # #对比度
+            c_11 = cap.set(cv2.CAP_PROP_CONTRAST, 1)
+            # #饱和度
+            c_12 = cap.set(cv2.CAP_PROP_SATURATION, 0.39)
+            # cap.set(cv2.CAP_PROP_SHARPNESS,255)
+            # #色相
+            cap.set(cv2.CAP_PROP_HUE, 0.45)
+            # #增益
+            # c_14=cap.get(cv2.CAP_PROP_GAIN)
+            # #曝光
+            # c_15=cap.set(cv2.CAP_PROP_EXPOSURE)
+            cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
+            # c_15=cap.set(cv2.CAP_PROP_EXPOSURE,i*0.01)
+            c_15 = cap.set(cv2.CAP_PROP_EXPOSURE, 0.26)
+
             assert cap.isOpened(), 'Failed to open %s' % s
             w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))

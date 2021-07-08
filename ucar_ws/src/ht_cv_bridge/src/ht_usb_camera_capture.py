@@ -3,17 +3,17 @@ import cv2
 import numpy as np
 import cv2.aruco as aruco
 import time
-output='ht_moren.mp4'
+output='ht_1280e_15.mp4'
 
 
 def ht_aruco():
     cap = cv2.VideoCapture("/dev/ucar_video")
-    weight = 1920
-    height = 1080
+    # weight = 1920
+    # height = 1080
     # weight = 1280
     # height = 720
-    # weight = 640
-    # height = 480
+    weight = 640
+    height = 480
     cap.set(3, weight)
     cap.set(4, height)
     # 可以改
@@ -33,18 +33,17 @@ def ht_aruco():
     # c_15=cap.get(cv2.CAP_PROP_EXPOSURE)
 
     # 亮度
-    # c_10 = cap.set(cv2.CAP_PROP_BRIGHTNESS, 0.5)
+    c_10 = cap.set(cv2.CAP_PROP_BRIGHTNESS, 0.7)
     # #对比度
-    # c_11=cap.get(cv2.CAP_PROP_CONTRAST)
+    c_11 = cap.set(cv2.CAP_PROP_CONTRAST, 1)
     # #饱和度
-    # c_12=cap.get(cv2.CAP_PROP_SATURATION)
+    c_12 = cap.set(cv2.CAP_PROP_SATURATION, 0.39)
+    # cap.set(cv2.CAP_PROP_SHARPNESS,255)
     # #色相
-    # c_13=cap.get(cv2.CAP_PROP_HUE)
-    # #增益
-    # c_14=cap.get(cv2.CAP_PROP_GAIN)
-    # #曝光
-    # c_15=cap.set(cv2.CAP_PROP_EXPOSURE,5)
-
+    cap.set(cv2.CAP_PROP_HUE, 0.45)
+    cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
+    c_15 = cap.set(cv2.CAP_PROP_EXPOSURE, 0.12)
+    c_15 = cap.get(cv2.CAP_PROP_EXPOSURE)
     # c_3=cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     # c_3=cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     # print(c_0)
@@ -60,7 +59,7 @@ def ht_aruco():
     # print(c_12)
     # print(c_13)
     # print(c_14)
-    # print('c_15',c_15)
+    print('c_15',c_15)
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # 视频编解码器
     fps = cap.get(cv2.CAP_PROP_FPS)  # 帧数
     width, height = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))  # 宽高
@@ -69,7 +68,7 @@ def ht_aruco():
 
     b_fps = time.time()  # 后帧时间全局变量赋值
 
-    for i in range(600):
+    for i in range(12000):
         # get a frame
         # 读取一帧
         f_fps = time.time()  # 前帧时间

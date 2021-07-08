@@ -199,17 +199,31 @@ exit:
 /**
  * 播放音频文件，音频文件是保存在本地的，可调用system的play进行播放
  */
-void playVoice()
+void playVoice(xf_mic_tts_offline::Play_TTS_srv::Request &req)
 {
-    string play_audio_path = "play " + pkg_path + "/audio/shanben.wav";
+    string play_audio_path = "play " + pkg_path + "/audio/" +req.text.c_str() +".wav";
     system(play_audio_path.c_str());
 }
-
+void playVoice1()
+{
+    string play_audio_path = "play " + pkg_path + "/audio/1.wav";
+    system(play_audio_path.c_str());
+}
+void playVoice2()
+{
+    string play_audio_path = "play " + pkg_path + "/audio/2.wav";
+    system(play_audio_path.c_str());
+}
+void playVoice3()
+{
+    string play_audio_path = "play " + pkg_path + "/audio/3.wav";
+    system(play_audio_path.c_str());
+}
 void playVoiceByPerson(string word)
 {
     string path = pkg_path + "/audio/say.wav";
     xf_mic_tts(word.c_str(), path.c_str(), appID.c_str(), pkg_path);
-    playVoice();
+    playVoice1();
 }
 
 /**
@@ -223,7 +237,8 @@ bool xf_mic_tts_callback(xf_mic_tts_offline::Play_TTS_srv::Request &req,
     {
         std::cout << "I will speak:" << req.text.c_str() << std::endl;
         //语音合成到本地路径
-        string path = pkg_path + "/audio/say.wav";
+        //string path = pkg_path + "/audio/say.wav";
+        string path = pkg_path + "/audio/" + req.text.c_str()+".wav";
         string speaker = "xiaoyan";
 
         if (req.speakerName.size() > 1)
@@ -244,10 +259,35 @@ bool xf_mic_tts_callback(xf_mic_tts_offline::Play_TTS_srv::Request &req,
         }
         else
         {
-            playVoice();
+            playVoice(req);
             res.result = "ok";
             res.fail_reason = "";
         }
+    }
+    else
+    {
+        res.result = "fail";
+        res.fail_reason = "text is null_error";
+    }
+    ROS_INFO("send result to client,finish to paly text\n");
+    return true;
+}
+
+bool voiceopen_callback(xf_mic_tts_offline::Play_TTS_srv::Request &req,
+                         xf_mic_tts_offline::Play_TTS_srv::Response &res)
+{
+   
+    if (req.text.size() > 0)
+    {
+        if(req.text=="外卖")        
+       { std::cout << "I will speak:" << req.text.c_str() << std::endl;
+        playVoice1();}
+ if(req.text=="食堂")        
+       { std::cout << "I will speak:" << req.text.c_str() << std::endl;
+        playVoice2();}
+ if(req.text=="不点")        
+       { std::cout << "I will speak:" << req.text.c_str() << std::endl;
+        playVoice3();}
     }
     else
     {
@@ -274,6 +314,7 @@ int main(int argc, char **argv)
     //playVoiceByPerson(greet_word);
     //订阅函数声明
     ros::ServiceServer service_play_tts = n.advertiseService(tts_service, xf_mic_tts_callback);
+    ros::ServiceServer voiceopen = n.advertiseService("voiceopen", voiceopen_callback);
     ros::spin();
 
     return 0;

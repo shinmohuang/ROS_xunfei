@@ -12,8 +12,10 @@ from cv_bridge import CvBridge, CvBridgeError
 cap = cv2.VideoCapture("/dev/ucar_video")
 #weight=320
 #height=240
-weight=1920
-height=1080
+#weight=1920
+#height=1080
+weight=640
+height=480
 value=1
 cap.set(3, weight)  
 #print('宽度:{}'.format(cap.get(3)))
@@ -32,7 +34,7 @@ print(codec)
 cap.set(cv2.CAP_PROP_FOURCC, codec)
 fps =cap.get(cv2.CAP_PROP_FPS) #获取视频帧数
 cap.set(cv2.CAP_PROP_AUTOFOCUS, False)  # 禁止自动对焦
-cap.set(cv2.CAP_PROP_AUTOFOCUS, True)
+# cap.set(cv2.CAP_PROP_AUTOFOCUS, True)
 # cap.set(cv2.CAP_PROP_SETTINGS, 1) 
 b_fps=time.time()  #后帧时间全局变量赋值
 

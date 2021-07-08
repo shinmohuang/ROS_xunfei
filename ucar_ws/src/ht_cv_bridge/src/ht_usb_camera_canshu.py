@@ -40,13 +40,27 @@ cap = cv2.VideoCapture("/dev/ucar_video")
 # #饱和度
 # c_12=cap.get(cv2.CAP_PROP_SATURATION)
 # #色相
-c_13=cap.set(cv2.CAP_PROP_HUE,0.5)
+# c_13=cap.set(cv2.CAP_PROP_HUE,0)
 # #增益
 # c_14=cap.get(cv2.CAP_PROP_GAIN)
 # #曝光
-# c_15=cap.get(cv2.CAP_PROP_EXPOSURE)
-cap.set(cv2.CAP_PROP_FPS,15)
-c_5=cap.get(cv2.CAP_PROP_FPS)
+# c_15=cap.set(cv2.CAP_PROP_EXPOSURE)
+# cap.set(cv2.CAP_PROP_AUTO_EXPOSURE,0.25)
+# c_15=cap.set(cv2.CAP_PROP_EXPOSURE,0.2)
+#亮度
+c_10=cap.set(cv2.CAP_PROP_BRIGHTNESS,0)
+# #对比度
+c_11=cap.set(cv2.CAP_PROP_CONTRAST,1)
+# #饱和度
+c_12=cap.set(cv2.CAP_PROP_SATURATION,0.39)
+# cap.set(cv2.CAP_PROP_SHARPNESS,255)
+# #色相
+cap.set(cv2.CAP_PROP_HUE,0.45)
+cap.set(cv2.CAP_PROP_AUTO_EXPOSURE,0.25)
+c_15=cap.set(cv2.CAP_PROP_EXPOSURE,0.16)
+c_15=cap.get(cv2.CAP_PROP_EXPOSURE)
+# cap.set(cv2.CAP_PROP_FPS,15)
+# c_5=cap.get(cv2.CAP_PROP_FPS)
 # cap.set(cv2.CAP_PROP_AUTOFOCUS, True)  # 禁止自动对焦
 # cap.set(cv2.CAP_PROP_SETTINGS, 1)
 
@@ -57,7 +71,7 @@ c_5=cap.get(cv2.CAP_PROP_FPS)
 # print(c_2)
 # print(c_3)
 # print(c_4)
-print(c_5)
+# print(c_5)
 # print(c_6)
 # print(c_7)
 # print(c_10)
@@ -65,13 +79,13 @@ print(c_5)
 # print(c_12)
 #print(c_13)
 #print(c_14)
-# print(c_15)
+print(c_15)
 #weight=320
 #height=240
-weight=1920
-height=1080
-#weight=640
-#height=480
+# weight=1920
+# height=1080
+weight=640
+height=480
 # value=1
 cap.set(3, weight)  
 #print('宽度:{}'.format(cap.get(3)))

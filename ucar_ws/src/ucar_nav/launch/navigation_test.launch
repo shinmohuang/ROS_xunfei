@@ -6,7 +6,7 @@
 
   <include file="$(find ydlidar)/launch/ydlidar.launch" > </include>
 
-   <include file="$(find yocs_cmd_vel_mux)/launch/standalone.launch" > </include>
+    <!-- <include file="$(find yocs_velocity_smoother)/launch/standalone.launch" > </include> -->
 
   <!-- <include file="$(find robot_pose_ekf)/launch/robot_pose_ekf.launch" > </include> -->
 
@@ -32,9 +32,7 @@
 
 		<param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
 		<param name="controller_frequency" value="5.0" />
-		<param name="controller_patience" value="15.0" />
-
-    <remap from="/move_base/cmd_vel" to="/yocs_cmd_vel_mux/navi/cmd_vel" />
+		<param name="controller_patience" value="10.0" />
 
   </node>
 

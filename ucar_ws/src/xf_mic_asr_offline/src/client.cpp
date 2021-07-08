@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
     GetOfflineResult_srv.request.offline_recognise_start = 1;
     GetOfflineResult_srv.request.confidence_threshold = 20;
-    GetOfflineResult_srv.request.time_per_order = 2;
+    GetOfflineResult_srv.request.time_per_order = 1;
     sleep(2);
 
 part2:

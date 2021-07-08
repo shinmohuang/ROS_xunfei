@@ -14,6 +14,7 @@ def ht_aruco():
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # 视频编解码器
     # fps = cap.get(cv2.CAP_PROP_FPS)  # 帧数
     fps = 15
+    print(1)
     data = rospy.wait_for_message('/ht_image_biaoding_view/ht_image_biaoding_raw', Image, timeout=None)
     # width, height = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))  # 宽高
     width, height = int(data.width), int(data.height)  # 宽高
@@ -66,6 +67,6 @@ def ht_aruco():
     print('final find aruco:{}'.format(int(ht_aruco_num)))
     return int(ht_aruco_num)
 # print(ht_aruco_list)
-# print('final find aruco:{}'.format(ht_aruco()))
+print('final find aruco:{}'.format(ht_aruco()))
 
 

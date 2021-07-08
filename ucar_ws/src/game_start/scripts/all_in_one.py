@@ -16,11 +16,15 @@ import smach
 import smach_ros
 import threading
 
-import ht_aruco as ht
+import xunfei_aruco_1 as ht
+import xunfei_publish_detect as detect_flag
+from ht_msg.msg import Ht
+
 
 voiceflag = False
-longhair =  0
-glasses = 0
+longhair=glasses=0
+# longhair =  0
+# glasses = 0
 
 def thread_job():
     rospy.spin()
@@ -77,7 +81,7 @@ class Navigate(smach.State):
             goal = self.goal_pose(waypoints)
             self.client.send_goal(goal)
             self.client.wait_for_result()
-            rospy.sleep(1.5)
+            # rospy.sleep(1.5)
             if (userdata.navpoints+1) == 0:
                return 'arrived'
             elif (userdata.navpoints+1) == 1:
@@ -113,78 +117,149 @@ class Navigate(smach.State):
             ]
         return waypoints[num]
 
+class Navigate2C(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['navigating', 'arrived', 'end'],output_keys=['navpoints'])
+
+        self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction) 
+        self.client.wait_for_server()
+    
+    def execute(self, userdata):
+        if rospy.is_shutdown():
+            return 'end'
+        else:
+            waypoints = self.get_waypoints() 
+            for pose in waypoints:                   
+                goal = self.goal_pose(pose)
+                self.client.send_goal(goal)
+                self.client.wait_for_result()
+                rospy.sleep(1.5)
+            return 'arrived'
+
+    def goal_pose(self,pose):
+        goal_pose = MoveBaseGoal()
+        goal_pose.target_pose.header.frame_id = 'map'
+        goal_pose.target_pose.pose.position.x = pose[0][0]
+        goal_pose.target_pose.pose.position.y = pose[0][1]
+        goal_pose.target_pose.pose.position.z = pose[0][2]
+        goal_pose.target_pose.pose.orientation.x = pose[1][0]
+        goal_pose.target_pose.pose.orientation.y = pose[1][1]
+        goal_pose.target_pose.pose.orientation.z = pose[1][2]
+        goal_pose.target_pose.pose.orientation.w = pose[1][3]
+
+        return goal_pose
+
+
+    def get_waypoints(self):
+        waypoints = [
+            [[-0.063, -2.913, 0.000],[0.000, 0.000, 0.526, 0.851]]
+            ]
+        return waypoints
+
+
+
+def thread_detect_pub():
+    detect_flag.detect_publisher()
 
 class Aruco(smach.State):
     def __init__(self):
-        smach.State.__init__(self,outcomes=['nav2D1','nav2D2','nav2D3','Aruco','end'],output_keys=['navpoints'])
+        smach.State.__init__(self,outcomes=['NAV2C','nav2D1','nav2D2','nav2D3','Aruco','end'],output_keys=['navpoints'])
 
     def execute(self, userdata):
-        count = 0
-        count = count+1
+        # count = 0
+        # count = count+1
+
+        add_thread = threading.Thread(target = thread_detect_pub)
+        add_thread.start()
+
+        client = rospy.ServiceProxy('xf_mic_tts_offline_node/voiceopen', Play_TTS_srv)
         code = ht.ht_aruco()
         if code == 0:
             userdata.navpoints = 0
-            return 'nav2D1'
+            # return 'nav2D1'    
+            client.call('外卖','xiaoyan')        
+            return 'NAV2C'
         elif code == 1:
             userdata.navpoints = 1
-            return 'nav2D2'
+            # return 'nav2D2'            
+            client.call('食堂','xiaoyan')
+            return 'NAV2C'
         elif code == 2:
             userdata.navpoints = 2
-            return'nav2D3'
+                # return'nav2D3'            
+            client.call('不点','xiaoyan')
+            return 'NAV2C'
+
         elif code == -1:
-            if count <10:
-                return 'Aruco'
-            else:
-                return 'end'
+        #     if count <10:
+            return 'Aruco'
+            # else:
+            # return 'end'
 
 
 
-def thread_detect():
-    os.system('python3 /mnt/ROS_xunfei/ucar_ws/src/ht_image/scripts/xunfei2.0.py')
 
 
-class detect(smach.State):
-    def __init__(self):
-        smach.State.__init__(self,outcomes=['success'])
+# class detect(smach.State):
+#     def __init__(self):
+#         smach.State.__init__(self,outcomes=['success'])
+        
 
-    def execute(self, userdata):
-        add_thread = threading.Thread(target = thread_detect)
-        add_thread.start()
-        return 'success'
+#     def execute(self, userdata):
+#         # detect_flag.detect_publisher()
+#         rospy.Subscriber("ht_num_info",Ht, detectcallback)
+#         return 'success'
 
+
+def detectcallback(ht):
+    global longhair, glasses
+    glasses = ht.glasses_people
+    longhair = ht.longhair_people
+    print(glasses)
+    print(longhair)
+    # rospy.signal_shutdown('shut down')
 
 class voiceSuccess(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['boardcast'])
+        smach.State.__init__(self, outcomes=['end'])
+        global longhair
+        global glasses
 
     def execute(self, userdata):
         #   rospy.init_node("voiceSuccess")
-        global longhair
-        global glasses
-        longhair = 1
-        glasses = 2
+        
+        # longhair = 1
+        # glasses = 2
+        get_data = rospy.wait_for_message("ht_num_info", Ht, timeout=None)
+        longhair,glasses = get_data.glasses_people, get_data.longhair_people
         client = rospy.ServiceProxy('xf_mic_tts_offline_node/play_txt_wav', Play_TTS_srv)
-        data = '长头发人数：'+str(longhair)+'眼镜个数：'+str(glasses)
+        data = '长头发人数：'+str(longhair)+'人。'+'眼镜个数：'+str(glasses)+'副。'
         # data = str(data) 
         client.call('您的餐品已送达，请您取餐！','xiaoyan')
         client.call(data,'xiaoyan')
         #rospy.loginfo('语音已发送:', response.result)
+        return 'end'
         
 
-        
-        return 'boardcast'
-
+         
+def thread_detect():
+    os.system('python3 /home/ucar/ROS_xunfei/ucar_ws/src/ht_image/scripts/xunfei5.0.py')
 
 
 def main():
     rospy.init_node('first_try')
     sm = smach.StateMachine(outcomes=['end'])
 
+    add_thread = threading.Thread(target = thread_detect)
+    add_thread.start()
+
     with sm:        
         smach.StateMachine.add('WAIT', Wait4Awake(),transitions={'navigating':'NAV', 'wait':'WAIT' })
         smach.StateMachine.add('NAV', Navigate(), transitions={'arrived':'ARUCO', 'navigating':'NAV','end':'VOISUCC'})
-        smach.StateMachine.add('ARUCO', Aruco(), transitions={'nav2D1':'NAV', 'nav2D2':'NAV','nav2D3':'NAV','Aruco':'ARUCO','end':'end'})
-        smach.StateMachine.add('VOISUCC',voiceSuccess(),transitions={'boardcast':'end'})
+        smach.StateMachine.add('ARUCO', Aruco(), transitions={'NAV2C': 'NAV2C','nav2D1':'NAV', 'nav2D2':'NAV','nav2D3':'NAV','Aruco':'ARUCO','end':'end'})
+        smach.StateMachine.add('VOISUCC',voiceSuccess(),transitions={'end':'end'})
+        smach.StateMachine.add('NAV2C',Navigate2C(),transitions={'navigating':'NAV2C','arrived':'NAV','end':'end'})
+
 
         sis = smach_ros.IntrospectionServer('FIRST_TRY', sm, '/SM_ROOT')
         sis.start()

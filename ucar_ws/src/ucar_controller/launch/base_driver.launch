@@ -5,5 +5,7 @@
   </node>
   <!-- <node pkg="joy" name="joy_node" type="joy_node"/> -->
 
-  <node pkg="ucar_controller" name="sensor_tf_server" type="sensor_tf_server.py"/>
+  <!-- <node pkg="ucar_controller" name="sensor_tf_server" type="sensor_tf_server.py"/> -->
+  
+  <node pkg="ht_cv_bridge" name="image_pub" type="xunfei_camera_1.py"/>
 </launch> 

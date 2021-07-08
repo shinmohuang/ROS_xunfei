@@ -17,5 +17,5 @@ def callback(data):
 if __name__ == '__main__':
     rospy.init_node('img_process_node', anonymous=True)
     bridge = CvBridge()
-    rospy.Subscriber('/image_view/image_raw', Image, callback)
+    rospy.Subscriber('/ht_image_biaoding_view/ht_image_biaoding_raw', Image, callback)
     rospy.spin()
